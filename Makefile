@@ -1,8 +1,7 @@
 .DEFAULT_GOAL := help
 
 # Detect runner UID/GID for chown (avoids root-owned files on Linux)
-CURRENT_UID := $(shell id -u)
-CURRENT_GID := $(shell id -g)
+runner := $(shell whoami)
 
 DC := docker compose
 EXEC := $(DC) exec backend
@@ -77,8 +76,8 @@ migrate: ## Run database migrations
 
 .PHONY: makemigrations
 makemigrations: ## Create new migrations
-	$(MANAGE) makemigrations
-	$(DC) exec backend chown -R $(CURRENT_UID):$(CURRENT_GID) /app
+	$(DC) run --rm backend python manage.py makemigrations
+	sudo chown -R $(runner):$(runner) -Rf .
 
 .PHONY: createsuperuser
 createsuperuser: ## Create admin user
@@ -94,7 +93,8 @@ test: ## Run all tests with pytest
 
 .PHONY: test-cov
 test-cov: ## Run tests with coverage report
-	$(EXEC) pytest --cov --cov-report=html
+	$(EXEC) pytest --cov --cov-report=html --cov-report=term
+	@cp -r src/htmlcov htmlcov 2>/dev/null; true
 
 # ---------------------------------------------------------------------------
 # Code quality

@@ -63,6 +63,7 @@ MIDDLEWARE = [
 
 if DEBUG:
     MIDDLEWARE.insert(0, "debug_toolbar.middleware.DebugToolbarMiddleware")
+    MIDDLEWARE.append("querycount.middleware.QueryCountMiddleware")
     INTERNAL_IPS = ["127.0.0.1"]
 
 # ---------------------------------------------------------------------------

@@ -21,7 +21,7 @@ loop_postgres_ready() {
 
 loop_redis_ready() {
     echo "Waiting for Redis..."
-    until redis-cli -h "${REDIS_HOST:-redis}" -p "${REDIS_PORT:-6379}" ping > /dev/null 2>&1; do
+    until echo 2>/dev/null < /dev/tcp/${REDIS_HOST:-redis}/${REDIS_PORT:-6379}; do
         sleep 1
     done
     echo "Redis is ready."

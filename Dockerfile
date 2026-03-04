@@ -27,9 +27,4 @@ COPY src/ .
 COPY docker/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-# Non-root user
-RUN addgroup --system app && adduser --system --ingroup app app
-RUN chown -R app:app /app
-USER app
-
 ENTRYPOINT ["/entrypoint.sh"]
