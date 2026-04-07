@@ -1,8 +1,8 @@
 from unittest.mock import patch
 
 import pytest
-
 from core.exceptions import ApplicationError
+
 from users.factories import UserFactory
 from users.services import user_create, user_deactivate, user_update
 

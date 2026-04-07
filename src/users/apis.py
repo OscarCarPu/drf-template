@@ -1,11 +1,11 @@
+from api.mixins import ApiAuthMixin
+from api.pagination import LimitOffsetPagination
+from api.utils import get_paginated_response
 from drf_spectacular.utils import extend_schema
 from rest_framework import serializers, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from api.mixins import ApiAuthMixin
-from api.pagination import LimitOffsetPagination
-from api.utils import get_paginated_response
 from users.models import User
 from users.selectors import user_get, user_list
 from users.services import user_create, user_deactivate, user_update

@@ -7,9 +7,7 @@ cache keys never collide across parallel workers.
 
 import pytest
 from rest_framework.test import APIClient
-
 from users.factories import UserFactory
-
 
 # ---------------------------------------------------------------------------
 # xdist isolation

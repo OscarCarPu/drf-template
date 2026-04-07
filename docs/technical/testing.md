@@ -179,3 +179,18 @@ fail_under = 80
 ```
 
 The coverage threshold is **80%**. CI will fail if coverage drops below this.
+
+## Pre-Commit Hook
+
+A git pre-commit hook runs linting and tests before every commit. It is installed automatically by `make init`, or manually with:
+
+```bash
+make install-hooks
+```
+
+The hook runs:
+
+1. `make lint` — ruff check + format check
+2. `make testing` — all tests (unit+integration parallel, then e2e sequential)
+
+If either step fails, the commit is blocked. This ensures no broken code or style violations reach the repository.

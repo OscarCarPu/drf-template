@@ -1,9 +1,9 @@
-from django.db import transaction
-
 from core.exceptions import ApplicationError
-from users.models import User
+from django.db import transaction
 from utils.services import model_update
 from utils.tasks import enqueue_on_commit
+
+from users.models import User
 
 
 @transaction.atomic

@@ -50,13 +50,7 @@ class ResilientTask(Task):
 
     def on_failure(self, exc, task_id, args, kwargs, einfo):
         subject = f"[Celery] Task {self.name} failed"
-        message = (
-            f"Task ID: {task_id}\n"
-            f"Args: {args}\n"
-            f"Kwargs: {kwargs}\n"
-            f"Exception: {exc}\n"
-            f"Traceback:\n{einfo}"
-        )
+        message = f"Task ID: {task_id}\nArgs: {args}\nKwargs: {kwargs}\nException: {exc}\nTraceback:\n{einfo}"
         logger.error(message)
 
         if not settings.DEBUG:

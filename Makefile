@@ -17,14 +17,21 @@ help: ## Show this help
 # ---------------------------------------------------------------------------
 
 .PHONY: init
-init: ## Initialize project (copy .env, build, start, migrate)
+init: ## Initialize project (copy .env, build, start, migrate, hooks)
 	@test -f .env || cp .env.example .env
 	$(DC) build
 	$(DC) up -d
 	@echo "Waiting for services to be ready..."
 	@sleep 5
 	$(MANAGE) migrate --noinput
+	@$(MAKE) install-hooks
 	@echo "Project ready! Visit http://localhost:8000/api/schema/swagger/"
+
+.PHONY: install-hooks
+install-hooks: ## Install git pre-commit hook
+	@printf '#!/bin/sh\nmake lint && make testing\n' > .git/hooks/pre-commit
+	@chmod +x .git/hooks/pre-commit
+	@echo "Pre-commit hook installed."
 
 # ---------------------------------------------------------------------------
 # Docker
@@ -114,13 +121,13 @@ testing-cov: ## Run tests with coverage report
 
 .PHONY: lint
 lint: ## Run ruff check + format check
-	$(EXEC) ruff check .
-	$(EXEC) ruff format --check .
+	$(DC) run --rm backend ruff check .
+	$(DC) run --rm backend ruff format --check .
 
 .PHONY: lint-fix
 lint-fix: ## Run ruff check --fix + format
-	$(EXEC) ruff check --fix .
-	$(EXEC) ruff format .
+	$(DC) run --rm backend ruff check --fix .
+	$(DC) run --rm backend ruff format .
 
 # ---------------------------------------------------------------------------
 # OpenAPI
