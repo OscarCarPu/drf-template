@@ -31,6 +31,7 @@ src/orders/
 ├── tasks.py          # create this (if needed)
 └── tests/
     ├── __init__.py
+    ├── test_unit.py
     ├── test_models.py
     ├── test_services.py
     ├── test_selectors.py
@@ -237,12 +238,11 @@ class OrderFactory(factory.django.DjangoModelFactory):
 
 Follow the pattern in `src/users/tests/`:
 
-- `test_models.py` — model creation, constraints, properties
-- `test_services.py` — business logic, side effects (mock `enqueue_on_commit` or `task_on_commit`)
-- `test_selectors.py` — filtering, edge cases
-- `test_apis.py` — auth, status codes, response shape
-
-Use markers: `@pytest.mark.integration` for model/service/selector tests, `@pytest.mark.e2e` for API tests.
+- `test_unit.py` — pure logic that needs no DB: model properties, error classes, helper functions (`@pytest.mark.unit`)
+- `test_models.py` — model creation, constraints, managers (`@pytest.mark.integration`)
+- `test_services.py` — business logic, side effects; mock `enqueue_on_commit` or `task_on_commit` (`@pytest.mark.integration`)
+- `test_selectors.py` — filtering, retrieval, edge cases (`@pytest.mark.integration`)
+- `test_apis.py` — auth, status codes, response shape (`@pytest.mark.e2e`)
 
 ## Checklist
 
