@@ -238,12 +238,15 @@ class OrderFactory(factory.django.DjangoModelFactory):
 Follow the pattern in `src/users/tests/`:
 
 - `test_models.py` — model creation, constraints, properties
-- `test_services.py` — business logic, side effects (mock `task_on_commit`)
+- `test_services.py` — business logic, side effects (mock `enqueue_on_commit` or `task_on_commit`)
 - `test_selectors.py` — filtering, edge cases
 - `test_apis.py` — auth, status codes, response shape
 
+Use markers: `@pytest.mark.integration` for model/service/selector tests, `@pytest.mark.e2e` for API tests.
+
 ## Checklist
 
+- [ ] Business rules documented in `docs/specs/<app>.md`
 - [ ] App created and registered in `INSTALLED_APPS`
 - [ ] Model extends `BaseModel`, migrations created
 - [ ] Services in `services.py` — `@transaction.atomic`, `full_clean()`
@@ -252,7 +255,5 @@ Follow the pattern in `src/users/tests/`:
 - [ ] APIs in `apis.py` — one `APIView` per operation, nested serializers
 - [ ] URLs in `urls.py`, included in `api/urls.py`
 - [ ] Factory in `factories.py`
-- [ ] Tests in `tests/` — models, services, selectors, APIs
+- [ ] Tests in `tests/` — models, services, selectors, APIs (with proper markers)
 - [ ] Admin registered in `admin.py`
-
-<!-- TODO: Add any project-specific checklist items (e.g. permissions, audit logging). -->

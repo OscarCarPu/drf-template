@@ -6,6 +6,7 @@ x-django: &django
     - .env
   volumes:
     - ./src:/app
+    - ./pyproject.toml:/app/pyproject.toml:ro
   depends_on:
     postgres:
       condition: service_healthy

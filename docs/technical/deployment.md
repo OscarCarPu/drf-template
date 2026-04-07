@@ -32,8 +32,6 @@ Defined in `docker-compose.prod.yml`:
 | postgres | 1.0 | 512 MB |
 | redis | 0.25 | 128 MB |
 
-<!-- TODO: Adjust resource limits based on your actual workload and server capacity. -->
-
 ## Environment Variables
 
 All variables are read from `.env`. See `.env.example` for defaults.
@@ -60,8 +58,6 @@ All variables are read from `.env`. See `.env.example` for defaults.
 | `SENTRY_TRACES_SAMPLE_RATE` | `0.1` | Sentry performance sample rate |
 | `CORS_ALLOWED_ORIGINS` | _(empty)_ | Comma-separated frontend origins |
 | `EMAIL_BACKEND` | `django.core.mail.backends.smtp.EmailBackend` | Email sending backend |
-
-<!-- TODO: Add any project-specific environment variables here. -->
 
 ## Gunicorn Tuning
 
@@ -92,8 +88,6 @@ For large-scale deployments, consider offloading to S3 + CloudFront:
 2. Configure `DEFAULT_FILE_STORAGE` and `STATICFILES_STORAGE` in settings.
 3. Set `AWS_STORAGE_BUCKET_NAME`, `AWS_S3_REGION_NAME`, etc. as environment variables.
 
-<!-- TODO: Configure S3/CDN static file storage if needed. -->
-
 ## Monitoring
 
 ### Sentry
@@ -110,8 +104,6 @@ Performance tracing is enabled at 10% sample rate by default (`SENTRY_TRACES_SAM
 
 Celery monitoring via Flower is available as a Docker service. In production, secure it behind authentication or a reverse proxy.
 
-<!-- TODO: Set up Flower authentication (--basic-auth=user:password) for production. -->
-
 ## Pre-Deployment Checklist
 
 - [ ] `DJANGO_DEBUG=False`
@@ -126,5 +118,3 @@ Celery monitoring via Flower is available as a Docker service. In production, se
 - [ ] Flower secured with authentication or not exposed publicly
 - [ ] Backups configured for PostgreSQL
 - [ ] Resource limits reviewed for expected traffic
-
-<!-- TODO: Add project-specific deployment steps (DNS, SSL certificates, CI/CD pipeline). -->

@@ -3,6 +3,7 @@ import pytest
 from users.models import User
 
 
+@pytest.mark.integration
 @pytest.mark.django_db
 class TestUserModel:
     def test_create_user(self):

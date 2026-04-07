@@ -1,4 +1,4 @@
-FROM python:3.13-slim
+FROM python:3.14-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
@@ -21,6 +21,7 @@ ARG REQUIREMENTS_FILE=requirements/dev.txt
 RUN pip install --no-cache-dir -r ${REQUIREMENTS_FILE}
 
 # Application code
+COPY pyproject.toml .
 COPY src/ .
 
 # Entrypoint

@@ -213,18 +213,33 @@ class MyView(APIView):
 
 Requires: `CREATE EXTENSION IF NOT EXISTS unaccent;` in PostgreSQL.
 
+### enqueue_on_commit
+
+**Source:** `src/utils/tasks.py`
+
+Schedules a django.tasks background task after the current DB transaction commits. Use for lightweight async work (emails, notifications).
+
+```python
+from utils.tasks import enqueue_on_commit
+
+@transaction.atomic
+def my_service():
+    obj = MyModel.objects.create(...)
+    enqueue_on_commit(send_notification, object_id=obj.id)
+```
+
 ### ResilientTask
 
 **Source:** `src/utils/tasks.py`
 
-Celery task base class with automatic retry, exponential backoff, jitter, and admin email on final failure.
+Celery task base class with automatic retry, exponential backoff, jitter, and admin email on final failure. Use for heavy/periodic tasks.
 
 ```python
 from celery import shared_task
 from utils.tasks import ResilientTask
 
 @shared_task(base=ResilientTask, bind=True, max_retries=3)
-def my_task(self, *, some_id: int):
+def heavy_task(self, *, some_id: int):
     ...
 ```
 
@@ -234,7 +249,7 @@ Configuration: `autoretry_for=(Exception,)`, `retry_backoff=True`, `retry_backof
 
 **Source:** `src/utils/tasks.py`
 
-Schedules a Celery task to run after the current DB transaction commits.
+Schedules a Celery task to run after the current DB transaction commits. Use for heavy tasks dispatched via Celery.
 
 ```python
 from utils.tasks import task_on_commit
@@ -242,7 +257,5 @@ from utils.tasks import task_on_commit
 @transaction.atomic
 def my_service():
     obj = MyModel.objects.create(...)
-    task_on_commit(process_object, object_id=obj.id)
+    task_on_commit(heavy_processing_task, data_id=obj.id)
 ```
-
-<!-- TODO: Add documentation for any new utilities as they are created. -->

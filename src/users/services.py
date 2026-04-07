@@ -3,7 +3,7 @@ from django.db import transaction
 from core.exceptions import ApplicationError
 from users.models import User
 from utils.services import model_update
-from utils.tasks import task_on_commit
+from utils.tasks import enqueue_on_commit
 
 
 @transaction.atomic
@@ -17,7 +17,7 @@ def user_create(*, email: str, password: str, first_name: str = "", last_name: s
 
     from users.tasks import send_welcome_email
 
-    task_on_commit(send_welcome_email, user_id=user.id)
+    enqueue_on_commit(send_welcome_email, user_id=user.id)
 
     return user
 

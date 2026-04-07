@@ -7,6 +7,7 @@ from rest_framework.test import APIClient
 from users.factories import UserFactory
 
 
+@pytest.mark.e2e
 @pytest.mark.django_db
 class TestUserListApi:
     def test_requires_auth(self):
@@ -25,6 +26,7 @@ class TestUserListApi:
         assert len(response.data["results"]) >= 3
 
 
+@pytest.mark.e2e
 @pytest.mark.django_db
 class TestUserDetailApi:
     def test_returns_user(self, authenticated_client):
@@ -40,9 +42,10 @@ class TestUserDetailApi:
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
+@pytest.mark.e2e
 @pytest.mark.django_db
 class TestUserCreateApi:
-    @patch("users.services.task_on_commit")
+    @patch("users.services.enqueue_on_commit")
     def test_creates_user(self, mock_task, authenticated_client):
         data = {
             "email": "new@example.com",
@@ -62,6 +65,7 @@ class TestUserCreateApi:
         assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 
+@pytest.mark.e2e
 @pytest.mark.django_db
 class TestUserUpdateApi:
     def test_updates_user(self, authenticated_client):
@@ -73,6 +77,7 @@ class TestUserUpdateApi:
         assert response.data["first_name"] == "Updated"
 
 
+@pytest.mark.e2e
 @pytest.mark.django_db
 class TestUserDeactivateApi:
     def test_deactivates_user(self, authenticated_client):

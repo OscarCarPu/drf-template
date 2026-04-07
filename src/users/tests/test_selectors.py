@@ -4,6 +4,7 @@ from users.factories import UserFactory
 from users.selectors import user_get, user_list
 
 
+@pytest.mark.integration
 @pytest.mark.django_db
 class TestUserList:
     def test_returns_all_users(self):
@@ -27,6 +28,7 @@ class TestUserList:
         assert result.count() == 1
 
 
+@pytest.mark.integration
 @pytest.mark.django_db
 class TestUserGet:
     def test_returns_user(self):

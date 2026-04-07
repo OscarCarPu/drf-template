@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     "corsheaders",
     "drf_spectacular",
     "django_celery_beat",
+    "django_celery_results",
     "django_extensions",
     # Local
     "core.apps.CoreConfig",
@@ -168,3 +169,4 @@ from main.settings.files_and_storages import *  # noqa: F401, F403, E402
 from main.settings.jwt import *  # noqa: F401, F403, E402
 from main.settings.sentry import *  # noqa: F401, F403, E402
 from main.settings.spectacular import *  # noqa: F401, F403, E402
+from main.settings.tasks import *  # noqa: F401, F403, E402

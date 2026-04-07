@@ -7,10 +7,11 @@ from users.factories import UserFactory
 from users.services import user_create, user_deactivate, user_update
 
 
+@pytest.mark.integration
 @pytest.mark.django_db
 class TestUserCreate:
     def test_creates_user(self):
-        with patch("users.services.task_on_commit"):
+        with patch("users.services.enqueue_on_commit"):
             user = user_create(email="new@example.com", password="testpass123")
 
         assert user.email == "new@example.com"
@@ -18,7 +19,7 @@ class TestUserCreate:
         assert user.check_password("testpass123")
 
     def test_creates_user_with_name(self):
-        with patch("users.services.task_on_commit"):
+        with patch("users.services.enqueue_on_commit"):
             user = user_create(
                 email="new@example.com",
                 password="testpass123",
@@ -30,6 +31,7 @@ class TestUserCreate:
         assert user.last_name == "Doe"
 
 
+@pytest.mark.integration
 @pytest.mark.django_db
 class TestUserUpdate:
     def test_updates_first_name(self):
@@ -53,6 +55,7 @@ class TestUserUpdate:
         assert updated_user.email == original_email
 
 
+@pytest.mark.integration
 @pytest.mark.django_db
 class TestUserDeactivate:
     def test_deactivates_user(self):

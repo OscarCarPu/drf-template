@@ -10,8 +10,17 @@ repos:
       - id: debug-statements
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.9.7
+    rev: v0.11.4
     hooks:
       - id: ruff
         args: [--fix]
       - id: ruff-format
+
+  - repo: local
+    hooks:
+      - id: tests
+        name: tests
+        entry: make testing
+        language: system
+        pass_filenames: false
+        always_run: true

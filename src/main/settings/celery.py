@@ -1,3 +1,12 @@
+# ---------------------------------------------------------------------------
+# Celery (heavy tasks, periodic/cron, complex retry logic)
+# ---------------------------------------------------------------------------
+# For lightweight async work (emails, notifications), use django.tasks instead.
+# Celery is reserved for:
+#   - Long-running / CPU-intensive tasks
+#   - Periodic tasks via django-celery-beat (cron schedules)
+#   - Tasks requiring complex retry strategies (ResilientTask)
+
 from main.settings.config import env
 
 CELERY_BROKER_URL = env("CELERY_BROKER_URL", default="redis://redis:6379/1")

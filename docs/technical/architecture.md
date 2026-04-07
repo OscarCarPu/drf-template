@@ -2,6 +2,16 @@
 
 This project follows the [HackSoft Django Styleguide](https://github.com/HackSoftware/Django-Styleguide), which enforces a clear separation between data, business logic, read operations, and API interfaces.
 
+## Spec-Driven Development
+
+Business rules are documented in `docs/specs/<app>.md` before implementation. Each rule gets a **Rule ID** and must be enforced by at least one test. The workflow:
+
+1. **Spec** — Document the rule with stakeholders (e.g. `USR-DEACT-02`).
+2. **Test** — Write a failing test that enforces the rule.
+3. **Code** — Implement until the test passes.
+
+This ensures every business requirement is traceable: spec → test → implementation.
+
 ## Layer Responsibilities
 
 ### Models — Data Only
@@ -31,14 +41,14 @@ Rules:
 1. Wrap the function with `@transaction.atomic`.
 2. Call `full_clean()` before saving (the `model_update` utility does this automatically).
 3. Accept keyword-only arguments — never pass a request object.
-4. Dispatch async work through `task_on_commit()` so tasks only fire after the transaction commits.
+4. Dispatch async work through `enqueue_on_commit()` (django.tasks) or `task_on_commit()` (Celery).
 
 ```python
 # src/users/services.py
 @transaction.atomic
 def user_create(*, email: str, password: str, ...) -> User:
     user = User.objects.create_user(email=email, password=password, ...)
-    task_on_commit(send_welcome_email, user_id=user.id)
+    enqueue_on_commit(send_welcome_email, user_id=user.id)
     return user
 ```
 
@@ -83,9 +93,20 @@ class UserCreateApi(ApiAuthMixin, APIView):
         return Response(self.OutputSerializer(user).data, status=201)
 ```
 
+## Background Tasks
+
+Two systems with clear separation:
+
+| System | Use for |
+|---|---|
+| **django.tasks** | Lightweight async: emails, notifications, webhooks |
+| **Celery** | Heavy computation, periodic/cron, complex retry |
+
+See [Background Tasks](celery-tasks.md) for details.
+
 ## Error Flow
 
-All exceptions are normalized to a single JSON shape by `custom_exception_handler` (registered in `REST_FRAMEWORK["EXCEPTION_HANDLER"]`).
+All exceptions are normalized to a single JSON shape by `custom_exception_handler`:
 
 ```
 raise ApplicationError("User is already deactivated.")
@@ -97,23 +118,17 @@ custom_exception_handler(exc, ctx)
 Response({"message": "User is already deactivated.", "extra": {}}, status=400)
 ```
 
-The handler covers three cases:
-
 | Source | Conversion |
 |---|---|
 | `ApplicationError(message, extra)` | `400` with `{message, extra}` |
 | Django `ValidationError` | Converted to DRF `ValidationError`, then normalized |
 | Any DRF exception | Field errors → `{message: "Validation error.", extra: {fields: {...}}}` |
 
-Source: `src/core/exceptions.py`, `src/api/exception_handlers.py`
-
 ## App Boundaries
 
 - Apps communicate **only** through each other's services and selectors — never import another app's models directly for writes.
 - Each app owns its own `services.py`, `selectors.py`, `apis.py`, `urls.py`, `filters.py`, `factories.py`, and `tests/` directory.
 - Shared infrastructure lives in `core/` (base classes, exceptions) and `utils/` (reusable helpers).
-
-<!-- TODO: Document cross-app service call conventions once a second app exists. -->
 
 ## Directory Map
 
@@ -124,4 +139,9 @@ src/
 ├── utils/      # model_update, DynamicModelSerializer, ActiveManager, cache, tasks
 ├── users/      # Reference implementation of all patterns
 └── main/       # Django project config, settings, celery, urls
+
+docs/
+├── specs/      # Business rules (source of truth, tested against)
+├── technical/  # Architecture, API, deployment, testing docs
+└── README.md   # Documentation index
 ```

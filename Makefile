@@ -87,13 +87,25 @@ createsuperuser: ## Create admin user
 # Tests
 # ---------------------------------------------------------------------------
 
-.PHONY: test
-test: ## Run all tests with pytest
-	$(EXEC) pytest
+.PHONY: testing
+testing: ## Run all tests: unit+integration parallel, then e2e sequential
+	$(DC) run --rm backend sh -c 'pytest -m "not e2e" -n auto && pytest -m e2e'
 
-.PHONY: test-cov
-test-cov: ## Run tests with coverage report
-	$(EXEC) pytest --cov --cov-report=html --cov-report=term
+.PHONY: testing-unit
+testing-unit: ## Run only unit tests (no DB, no Redis)
+	$(DC) run --rm backend pytest -m unit -n auto
+
+.PHONY: testing-integration
+testing-integration: ## Run only integration tests (with DB + Redis)
+	$(DC) run --rm backend pytest -m integration -n auto
+
+.PHONY: testing-e2e
+testing-e2e: ## Run only E2E tests (sequential — shared fixtures)
+	$(DC) run --rm backend pytest -m e2e
+
+.PHONY: testing-cov
+testing-cov: ## Run tests with coverage report
+	$(DC) run --rm backend pytest --cov --cov-report=html --cov-report=term
 	@cp -r src/htmlcov htmlcov 2>/dev/null; true
 
 # ---------------------------------------------------------------------------

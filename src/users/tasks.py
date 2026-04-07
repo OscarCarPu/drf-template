@@ -1,14 +1,13 @@
 import logging
 
-from celery import shared_task
-
-from utils.tasks import ResilientTask
+from django.tasks import task
 
 logger = logging.getLogger(__name__)
 
 
-@shared_task(base=ResilientTask, bind=True, max_retries=3)
-def send_welcome_email(self, *, user_id: int):
+@task()
+def send_welcome_email(*, user_id: int):
+    """Send a welcome email to a newly created user (via django.tasks)."""
     from django.conf import settings
     from django.core.mail import send_mail
 
